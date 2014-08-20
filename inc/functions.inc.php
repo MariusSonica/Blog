@@ -21,35 +21,38 @@ function sanitizeData($data)
  *   Database connnection.
  * @param string $page
  *   Page path.
- * @param null $id
+ * @param null $url
  *
  * @return array|null
  */
-function retrieveEntries($db, $page, $id = NULL)
+function retrieveEntries($db, $page, $url=NULL)
 {
     /*
-    * If an entry ID was supplied, load the associated entry.
+    * If an entry URL was supplied, load the associated entry
     */
-    if (isset($id)) {
-        $sql = "SELECT title, entry
-    FROM entries
-    WHERE id=?
-    LIMIT 1";
+    if(isset($url))
+    {
+        $sql = "SELECT id, page, title, entry
+                FROM entries
+                WHERE url=?
+                LIMIT 1";
         $stmt = $db->prepare($sql);
-        $stmt->execute(array($_GET['id']));
+        $stmt->execute(array($url));
         // Save the returned entry array
         $e = $stmt->fetch();
         // Set the fulldisp flag for a single entry
         $fulldisp = 1;
     }
     /*
-    * If no entry ID was supplied, load all entry titles
+    /*
+    * If no entry URL provided, load all entry info for the page
     */
-    else {
-        $sql = "SELECT id, page, title, entry
-        FROM entries
-        WHERE page=?
-        ORDER BY created DESC";
+    else
+    {
+        $sql = "SELECT id, page, title, entry, url
+                FROM entries
+                WHERE page=?
+                ORDER BY created DESC";
         $stmt = $db->prepare($sql);
         $stmt->execute(array($page));
         $e = NULL; // Declare the variable to avoid errors
@@ -70,11 +73,21 @@ function retrieveEntries($db, $page, $id = NULL)
             $fulldisp = 1;
             $e = array(
                 'title' => 'No Entries Yet',
-                'entry' => '<a href="../admin.php">Post an entry!</a>'
+ //               'entry' => '<a href="../admin.php">Post an entry!</a>'
             );
         }
     }
     // Add the $fulldisp flag to the end of the array
     array_push($e, $fulldisp);
     return $e;
+}
+
+function makeUrl($title)
+{
+    $patterns = array(
+        '/\s+/',
+        '/(?!-)\W+/'
+    );
+    $replacements = array('-', '');
+    return preg_replace($patterns, $replacements, strtolower($title));
 }
