@@ -16,6 +16,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'
     include_once 'db.inc.php';
     $db = new PDO(DB_INFO, DB_USER, DB_PASS);
 
+    // Edit an existing entry
+    if(!empty($_POST['id']))
+    {
+        $sql = "UPDATE entries
+                SET title=?, entry=?, url=?
+                WHERE id=?
+                LIMIT 1";
+        $stmt = $db->prepare($sql);
+        $stmt->execute(
+            array(
+                $_POST['title'],
+                $_POST['entry'],
+                $url,
+                $_POST['id']
+            )
+        );
+        $stmt->closeCursor();
+    }
+    // Create a new entry
+    else
+    {
 /*    // Save the entry into the database
     $sql = "INSERT INTO entries (page, title, entry)
 VALUES (?, ?, ?)";
@@ -35,7 +56,7 @@ VALUES (?, ?, ?, ?)";
         array($_POST['page'], $_POST['title'], $_POST['entry'], $url)
     );
     $stmt->closeCursor();
-
+    }
     // Sanitize the page information for use in the success URL
     $page = htmlentities(strip_tags($_POST['page']));
 

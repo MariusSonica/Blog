@@ -1,4 +1,21 @@
 <?php
+function confirmDelete($db, $url)
+{
+    $e = retrieveEntries($db, '', $url);
+    return <<<FORM
+<form action="/admin.php" method="post">
+<fieldset>
+<legend>Are You Sure?</legend>
+<p>Are you sure you want to delete the entry "$e[title]"?</p>
+<input type="submit" name="submit" value="Yes" />
+<input type="submit" name="submit" value="No" />
+<input type="hidden" name="action" value="delete" />
+<input type="hidden" name="url" value="$url" />
+</fieldset>
+</form>
+FORM;
+}
+
 function sanitizeData($data)
 {
     // If $data is not an array, run strip_tags()
@@ -58,10 +75,17 @@ function retrieveEntries($db, $page, $url=NULL)
         $e = NULL; // Declare the variable to avoid errors
         // Loop through returned results and store as an array
         while ($row = $stmt->fetch()) {
-            $e[] = $row;
+            if($page=='blog')
+            {
+                $e[] = $row;
+                $fulldisp = 0;
+            }
+            else
+            {
+                $e = $row;
+                $fulldisp = 1;
+            }
         }
-        // Set the fulldisp flag for multiple entries
-        $fulldisp = 0;
 
         /*
         * If no entries were returned, display a default
@@ -80,6 +104,29 @@ function retrieveEntries($db, $page, $url=NULL)
     // Add the $fulldisp flag to the end of the array
     array_push($e, $fulldisp);
     return $e;
+}
+
+function deleteEntry($db, $url)
+{
+    $sql = "DELETE FROM entries
+            WHERE url=?
+            LIMIT 1";
+    $stmt = $db->prepare($sql);
+    return $stmt->execute(array($url));
+}
+
+function adminLinks($page, $url)
+{
+    // Format the link to be followed for each option
+    $editURL = "../admin/$page/$url";
+    $deleteURL = "../admin/delete/$url";
+
+    // Make a hyperlink and add it to an array
+    $admin['edit'] = "<a href=\"$editURL\">edit</a>";
+    $admin['delete'] = "<a href=\"$deleteURL\">delete</a>";
+
+    return $admin;
+// Build admin links here
 }
 
 function makeUrl($title)
