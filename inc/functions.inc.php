@@ -49,7 +49,7 @@ function retrieveEntries($db, $page, $url=NULL)
     */
     if(isset($url))
     {
-        $sql = "SELECT id, page, title, entry
+        $sql = "SELECT id, page, title, image, entry
                 FROM entries
                 WHERE url=?
                 LIMIT 1";
@@ -63,10 +63,10 @@ function retrieveEntries($db, $page, $url=NULL)
     /*
     /*
     * If no entry URL provided, load all entry info for the page
-    */
+*/
     else
     {
-        $sql = "SELECT id, page, title, entry, url
+        $sql = "SELECT id, page, title, image, entry, url
                 FROM entries
                 WHERE page=?
                 ORDER BY created DESC";
@@ -137,4 +137,16 @@ function makeUrl($title)
     );
     $replacements = array('-', '');
     return preg_replace($patterns, $replacements, strtolower($title));
+}
+
+function formatImage($img=NULL, $alt=NULL)
+{
+    if(isset($img))
+    {
+        return '<img src="'. $img.'" alt="'.$alt.'" />';
+    }
+    else
+    {
+        return NULL;
+    }
 }
