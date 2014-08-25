@@ -34,5 +34,31 @@ method="post" id="comment-form">
 </form>
 FORM;
 }
+    // Save comments to the database
+    public function saveComment($p)
+    {
+        // Sanitize the data and store in variables
+        $blog_id = htmlentities(strip_tags($p['blog_id']),ENT_QUOTES);
+        $name = htmlentities(strip_tags($p['name']),ENT_QUOTES);
+        $email = htmlentities(strip_tags($p['email']),ENT_QUOTES);
+        $comments = htmlentities(strip_tags($p['comment']),ENT_QUOTES);
+        // Keep formatting of comments and remove extra whitespace
+        $comment = nl2br(trim($comments));
+        // Generate and prepare the SQL command
+        $sql = "INSERT INTO comments (blog_id, name, email, comment)
+                VALUES (?, ?, ?, ?)";
+        if($stmt = $this->db->prepare($sql))
+        {
+            // Execute the command, free used memory, and return true
+            $stmt->execute(array($blog_id, $name, $email, $comment));
+            $stmt->closeCursor();
+            return TRUE;
+        }
+        else
+        {
+            // If something went wrong, return false
+            return FALSE;
+        }
+    }
 }
 ?>

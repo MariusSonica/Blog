@@ -93,7 +93,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'
     exit;
     // Continue processing information . . .
 } // If both conditions aren't met, sends the user back to the main page
-    else {
+
+    // If a comment is being posted, handle it here
+    else if($_SERVER['REQUEST_METHOD'] == 'POST'
+        && $_POST['submit'] == 'Post Comment')
+    {
+        // Include and instantiate the Comments class
+        include_once 'comments.inc.php';
+        $comments = new Comments();
+        // Save the comment
+        if($comments->saveComment($_POST))
+        {
+            // If available, store the entry the user came from
+            if(isset($_SERVER['HTTP_REFERER']))
+            {
+            $loc = $_SERVER['HTTP_REFERER'];
+            }
+            else
+            {
+                $loc = '../';
+            }
+            // Send the user back to the entry
+            header('Location: '.$loc);
+            exit;
+        }
+        // If saving fails, output an error message
+        else
+        {
+        exit('Something went wrong while saving the comment.');
+        }
+    }
+
+else {
     header('Location: ../admin.php');
     exit;
 }
