@@ -54,6 +54,11 @@ if(isset($_GET['url']))
 }
 else
 {
+    // Check if we're creating a new user
+    if($page == 'createuser')
+    {
+        $create = createUserForm();
+    }
     // Set the legend
     $legend = "New Entry Submission";
     // Set variables to NULL if not editing
@@ -79,6 +84,10 @@ else
 if($page == 'delete'):
 {
     echo $confirm;
+}
+elseif($page == 'createuser'):
+{
+    echo $create;
 }
 else:
 ?>

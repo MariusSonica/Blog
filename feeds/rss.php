@@ -31,7 +31,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
             // Escape HTML to avoid errors
             $entry = htmlentities($e['entry']);
             // Build the full URL to the entry
-            $url = 'http://localhost/simple_blog/blog/' . $e['url'];
+            $url = 'http://localhost/blog/' . $e['url'];
             ?>
             <item>
                 <title><?php echo $e['title']; ?></title>

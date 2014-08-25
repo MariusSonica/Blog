@@ -34,7 +34,7 @@ $e = sanitizeData($e);
     <link rel="stylesheet" href="/css/default.css" type="text/css"/>
     <link rel="alternate" type="application/rss+xml"
           title="My Simple Blog - RSS 2.0"
-          href="/simple_blog/feeds/rss.php" />
+          href="/feeds/rss.php" />
     <title> Simple Blog </title>
 </head>
 <body>
@@ -60,13 +60,14 @@ $e = sanitizeData($e);
         // Load the comment object
         include_once 'inc/comments.inc.php';
         $comments = new Comments();
+        $comment_disp = $comments->showComments($e['id']);
         $comment_form = $comments->showCommentForm($e['id']);
         }
     else
         {
         $comment_form = NULL;
         }
-        ?>
+?>
 
     <h2> <?php echo $e['title'] ?> </h2>
     <p> <?php echo $img, $e['entry'] ?> </p>
@@ -74,11 +75,14 @@ $e = sanitizeData($e);
             <?php echo $admin['edit'] ?>
             <?php if($page=='blog') echo $admin['delete'] ?>
     </p>
-    <?php if ($page == 'blog'): ?>
+    <?php
+        if ($page == 'blog'): ?>
             <p class="backlink">
                 <a href="../">Back to Latest Entries</a>
             </p>
-            <?php echo $comment_form; endif; ?>
+            <h3> Comments for This Entry </h3>
+            <?php echo $comment_disp, $comment_form;
+    endif; ?>
     <?php
     } // End the if statement
     // If the full display flag is 0, format linked entry titles
@@ -104,7 +108,7 @@ $e = sanitizeData($e);
         </a>
     </p
     <p>
-        <a href="/simple_blog/feeds/rss.php">
+        <a href="/feeds/rss.php">
             Subscribe via RSS!
         </a>
     </p>
