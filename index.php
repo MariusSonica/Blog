@@ -32,6 +32,9 @@ $e = sanitizeData($e);
     <meta http-equiv="Content-Type"
           content="text/html;charset=utf-8"/>
     <link rel="stylesheet" href="/css/default.css" type="text/css"/>
+    <link rel="alternate" type="application/rss+xml"
+          title="My Simple Blog - RSS 2.0"
+          href="/simple_blog/feeds/rss.php" />
     <title> Simple Blog </title>
 </head>
 <body>
@@ -51,6 +54,18 @@ $e = sanitizeData($e);
         $admin = adminLinks($page, $url);
         // Format the image if one exists
         $img = formatImage($e['image'], $e['title']);
+
+    if($page=='blog')
+        {
+        // Load the comment object
+        include_once 'inc/comments.inc.php';
+        $comments = new Comments();
+        $comment_form = $comments->showCommentForm($e['id']);
+        }
+    else
+        {
+        $comment_form = NULL;
+        }
         ?>
 
     <h2> <?php echo $e['title'] ?> </h2>
@@ -63,7 +78,7 @@ $e = sanitizeData($e);
             <p class="backlink">
                 <a href="../">Back to Latest Entries</a>
             </p>
-        <?php endif; ?>
+            <?php echo $comment_form; endif; ?>
     <?php
     } // End the if statement
     // If the full display flag is 0, format linked entry titles
@@ -88,6 +103,11 @@ $e = sanitizeData($e);
                 Post a New Entry
         </a>
     </p
+    <p>
+        <a href="/simple_blog/feeds/rss.php">
+            Subscribe via RSS!
+        </a>
+    </p>
 </div>
 </body>
 </html>
